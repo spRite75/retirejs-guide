@@ -1,6 +1,6 @@
 {
-  "name": "retirejs-guide",
-  "version": "1.0.0",
+  "name": "@lukem124/retirejs-guide",
+  "version": "1.0.1",
   "description": "",
   "main": "./lib/index.js",
   "bin": {
@@ -13,7 +13,7 @@
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
   },
   "author": "Luke Montgomery",
-  "license": "UNLICENSED",
+  "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
