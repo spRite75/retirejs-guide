@@ -53,7 +53,6 @@ export function analyseRetireJSONResult(result: RetireJSONResult) {
     result.data.forEach(data => {
         data.results.forEach(result => {
             result.vulnerabilities.forEach(vulnerability => {
-                try {
                     const id = `${result.component}-${result.detection}`;
 
                     if (!components.has(id)) {
@@ -82,16 +81,6 @@ export function analyseRetireJSONResult(result: RetireJSONResult) {
                     }
     
                     components.set(id, currentState);
-                } catch (e) {
-                    errors.push({
-                        error: e,
-                        details: {
-                            component: result.component,
-                            version: result.version,
-                            vulnerability: vulnerability
-                        }
-                    });
-                }
             })
         })
     })
