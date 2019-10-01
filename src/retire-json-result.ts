@@ -48,43 +48,55 @@ export class Severity {
 
 export function analyseRetireJSONResult(result: RetireJSONResult) {
     const components: Map<string, ComponentResult> = new Map<string, ComponentResult>();
+    const errors: any[] = [];
 
     result.data.forEach(data => {
         data.results.forEach(result => {
             result.vulnerabilities.forEach(vulnerability => {
-                const id = `${result.component}-${result.detection}`;
+                try {
+                    const id = `${result.component}-${result.detection}`;
 
-                if (!components.has(id)) {
-                    components.set(id, {
-                        currentLowestVersion: result.version,
-                        minimumRequiredVersion: vulnerability.below,
-                        highestSeverity: vulnerability.severity
+                    if (!components.has(id)) {
+                        components.set(id, {
+                            currentLowestVersion: result.version,
+                            minimumRequiredVersion: vulnerability.below,
+                            highestSeverity: vulnerability.severity
+                        });
+                    }
+    
+                    const currentState = components.get(id) as ComponentResult;
+    
+                    if (compareVersions(result.version, currentState.currentLowestVersion) < 0) {
+                        currentState.currentLowestVersion = result.version;
+                    }
+    
+                    if (compareVersions(vulnerability.below, currentState.minimumRequiredVersion) > 0) {
+                        currentState.minimumRequiredVersion = vulnerability.below;
+                    }
+    
+                    const newSeverity = new Severity(vulnerability.severity);
+                    const currentHighestSeverity = new Severity(currentState.highestSeverity);
+    
+                    if (newSeverity.isMoreSevereThan(currentHighestSeverity)) {
+                        currentState.highestSeverity = newSeverity.severity;
+                    }
+    
+                    components.set(id, currentState);
+                } catch (e) {
+                    errors.push({
+                        error: e,
+                        details: {
+                            component: result.component,
+                            version: result.version,
+                            vulnerability: vulnerability
+                        }
                     });
                 }
-
-                const currentState = components.get(id) as ComponentResult;
-
-                if (compareVersions(result.version, currentState.currentLowestVersion) < 0) {
-                    currentState.currentLowestVersion = result.version;
-                }
-
-                if (compareVersions(vulnerability.below, currentState.minimumRequiredVersion) > 0) {
-                    currentState.minimumRequiredVersion = vulnerability.below;
-                }
-
-                const newSeverity = new Severity(vulnerability.severity);
-                const currentHighestSeverity = new Severity(currentState.highestSeverity);
-
-                if (newSeverity.isMoreSevereThan(currentHighestSeverity)) {
-                    currentState.highestSeverity = newSeverity.severity;
-                }
-
-                components.set(id, currentState);
             })
         })
     })
 
-    return components;
+    return {components, errors};
 }
 
 
