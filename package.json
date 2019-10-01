@@ -1,6 +1,6 @@
 {
   "name": "@lukem124/retirejs-guide",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "./lib/index.js",
   "bin": {
