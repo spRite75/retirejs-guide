@@ -21,4 +21,14 @@ if (!resultsFile.endsWith('.json')) {
 
 const retireResults = JSON.parse(readFileSync(resultsFile, ''));
 
-console.log(analyseRetireJSONResult(retireResults));
+const { components, errors } = analyseRetireJSONResult(retireResults);
+
+console.log(components);
+if (errors.length > 0) {
+    console.log(chalk.red(`${errors.length} vulnerabilities had errors and could not be processed:`));
+    console.log(chalk.red('--'));
+    errors.forEach((error) => {
+        console.log(error);
+        console.log(chalk.red('--'));
+    })
+}
