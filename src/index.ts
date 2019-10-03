@@ -23,7 +23,18 @@ const retireResults = JSON.parse(readFileSync(resultsFile, ''));
 
 const { components, errors } = analyseRetireJSONResult(retireResults);
 
-console.log(components);
+components.forEach((result, key) => {
+    console.log(chalk.yellow(key));
+    console.log('\t', `oldest version found:\t\t${result.currentLowestVersion}`);
+    console.log('\t', `minimum required version:\t${result.minimumRequiredVersion}`);
+    console.log('\t', `highest severity:\t\t${result.highestSeverity}`);
+    console.log('\t', `affected file/s:`);
+    result.affectedFiles.forEach(file => {
+        console.log('\t\t', file);
+    });
+    console.log();
+});
+
 if (errors.length > 0) {
     console.log(chalk.red(`${errors.length} vulnerabilities had errors and could not be processed:`));
     console.log(chalk.red('--'));
