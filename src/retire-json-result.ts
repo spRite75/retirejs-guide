@@ -21,6 +21,7 @@ export interface ComponentResult {
     currentLowestVersion: string;
     minimumRequiredVersion: string;
     highestSeverity: string;
+    affectedFiles: string[];
 }
 
 export class Severity {
@@ -80,7 +81,8 @@ export function analyseRetireJSONResult(result: RetireJSONResult) {
                         components.set(id, {
                             currentLowestVersion: result.version,
                             minimumRequiredVersion: vulnerability.below,
-                            highestSeverity: vulnerability.severity
+                            highestSeverity: vulnerability.severity,
+                            affectedFiles: []
                         });
                     }
 
@@ -99,6 +101,10 @@ export function analyseRetireJSONResult(result: RetireJSONResult) {
 
                     if (newSeverity.isMoreSevereThan(currentHighestSeverity)) {
                         currentState.highestSeverity = newSeverity.severity;
+                    }
+
+                    if (currentState.affectedFiles.findIndex(val => val === data.file) === -1) {
+                        currentState.affectedFiles.push(data.file);
                     }
                     
                     components.set(id, currentState);
